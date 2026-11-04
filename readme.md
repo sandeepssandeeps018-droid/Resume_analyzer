@@ -247,17 +247,3 @@ http://localhost:8501
 ## 🎓 Project Objective
 
 The objective of AI Career Copilot is to develop an intelligent, personalized career preparation system that assists students in improving their technical skills, interview performance, and placement readiness through autonomous AI-powered assistance.
-
----
-
-## 👨‍💻 Developed By
-
-**AI Career Copilot Project Team**
-
-Developed as an AI-powered career preparation and placement assistance project.
-
----
-
-## 📄 License
-
-This project is intended for educational and research purposes.
