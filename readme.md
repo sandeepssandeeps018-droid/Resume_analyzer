@@ -1,93 +1,63 @@
 # 🚀 AI Career Copilot
 
-### An Agentic AI-Powered Career Preparation and Interview Simulation System
+An AI-powered career preparation app that helps students and job seekers analyze resumes, match them against job descriptions, find skill gaps, generate learning roadmaps, and practice with an AI mock interviewer.
 
-AI Career Copilot is an intelligent career preparation platform designed to help students prepare for placements and technical interviews. It uses Generative AI, Retrieval-Augmented Generation (RAG), and AI agents to analyze resumes, identify skill gaps, generate personalized career roadmaps, and conduct mock interviews.
-
-The system aims to transform traditional placement preparation into a personalized, AI-driven experience.
+Built with **Streamlit**, **Google Gemini 2.5 Flash**, **LangChain**, **FAISS**, and **SQLite**.
 
 ---
 
 ## 📌 Problem Statement
 
-Students preparing for placements often need to search across multiple platforms for company information, interview experiences, coding questions, aptitude resources, and career guidance.
+Students preparing for placements usually have to jump between many platforms for resume feedback, interview practice, and career guidance. The process is time-consuming and generic.
 
-This process is time-consuming and lacks personalization.
-
-AI Career Copilot addresses this problem by providing an integrated AI-powered platform that analyzes a student's profile and generates personalized preparation strategies based on their target company and job role.
+AI Career Copilot brings these tools into one place and personalizes them using the user's own resume and target job description.
 
 ---
 
 ## ✨ Features
 
-### 1. Resume Analyzer
-- Upload resumes in PDF format.
-- Extract resume information automatically.
-- Analyze technical skills and project experience.
-- Identify resume strengths and weaknesses.
-- Generate AI-powered improvement suggestions.
-
-### 2. Skill Gap Analysis
-- Compare candidate skills with target job requirements.
-- Identify missing technical skills.
-- Highlight existing strengths.
-- Recommend relevant preparation topics.
-
-### 3. Personalized Career Roadmap
-- Generate structured preparation plans.
-- Provide topic-wise learning recommendations.
-- Suggest preparation strategies based on career goals.
-
-### 4. AI Mock Interview
-- Simulate technical and HR interviews.
-- Generate context-aware interview questions.
-- Evaluate candidate responses.
-- Provide constructive feedback.
-
-### 5. Interview Day Simulation
-- Simulate a multi-round placement interview.
-- Adapt questions based on previous answers.
-- Generate a final interview performance scorecard.
-
-### 6. Retrieval-Augmented Generation (RAG)
-- Retrieve relevant information from knowledge sources.
-- Improve the relevance of AI-generated responses.
-- Support context-aware career guidance.
+| Feature | What it does |
+|---|---|
+| **Resume Analyzer** | Upload a PDF resume and get a summary of core skills, strengths, and weaknesses or missing metrics |
+| **Job Matcher** | Compare a resume with a job description and get an estimated ATS match score plus suggested changes |
+| **Skill Gap Analysis** | Lists tools, languages, and methodologies the job requires that the resume is missing |
+| **Mock Interview** | Chat-based AI interviewer that asks one technical question at a time, grounded in your resume and the job description, and remembers the conversation |
+| **Roadmap Generator** | Generates a step-by-step learning roadmap for a target role |
+| **AI Agent Workflow** | Runs four specialized AI agents in sequence: resume extraction, skill gap, interview questions, and roadmap |
+| **Career Chatbot (RAG)** | Ask questions about your resume; answers are grounded in retrieved resume chunks |
 
 ---
 
 ## 🏗️ System Architecture
 
 ```text
-                 ┌──────────────────────┐
-                 │      Streamlit       │
-                 │     User Interface   │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │     Application      │
-                 │       Backend        │
-                 └──────────┬───────────┘
-                            │
-              ┌─────────────┼─────────────┐
-              ▼             ▼             ▼
-       ┌────────────┐ ┌────────────┐ ┌────────────┐
-       │ Resume     │ │ Skill Gap  │ │ Interview  │
-       │ Analyzer   │ │ Agent      │ │ Agent      │
-       └────────────┘ └────────────┘ └────────────┘
-              │             │             │
-              └─────────────┼─────────────┘
-                            ▼
-                 ┌──────────────────────┐
-                 │   Gemini AI Model    │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │   RAG / Vector DB    │
-                 │      ChromaDB        │
-                 └──────────────────────┘
+                ┌─────────────────────────┐
+                │   Streamlit UI (app.py) │
+                └────────────┬────────────┘
+                             │
+      ┌──────────────┬───────┴────────┬───────────────┐
+      ▼              ▼                ▼               ▼
+┌───────────┐  ┌────────────┐  ┌─────────────┐  ┌───────────┐
+│ backend.py│  │  agent.py  │  │   rag.py    │  │ utils.py  │
+│ single-   │  │ 4-step     │  │ chunk →     │  │ PDF text  │
+│ call LLM  │  │ agent      │  │ embed →     │  │ extraction│
+│ features +│  │ pipeline   │  │ FAISS →     │  │ (pypdf)   │
+│ interview │  │            │  │ retrieve    │  │           │
+└─────┬─────┘  └─────┬──────┘  └──────┬──────┘  └───────────┘
+      │              │                │
+      └──────────────┴───────┬────────┘
+                             ▼
+                  ┌─────────────────────┐
+                  │  Gemini 2.5 Flash   │
+                  │  gemini-embedding-  │
+                  │  001 (embeddings)   │
+                  └─────────────────────┘
+
+      ┌────────────────────────────────┐
+      │ database.py → SQLite (career.db)│
+      │  • analysis                     │
+      │  • chat_history                 │
+      └────────────────────────────────┘
 ```
 
 ---
@@ -96,18 +66,14 @@ AI Career Copilot addresses this problem by providing an integrated AI-powered p
 
 | Technology | Purpose |
 |---|---|
-| Python | Core programming language |
-| Streamlit | Interactive frontend |
-| FastAPI | Backend API framework |
-| Google Gemini API | Generative AI |
-| LangChain | RAG pipeline and document processing |
-| LangGraph | Multi-agent workflow orchestration |
-| ChromaDB | Vector database |
-| Pydantic | Data validation |
-| SQLite | Database storage |
-| PyPDF | PDF text extraction |
-| Git | Version control |
-| GitHub | Source code hosting |
+| Python 3.11+ | Core language |
+| Streamlit | Web UI, chat interface, session state |
+| Google Gemini 2.5 Flash (`google-generativeai`) | Text generation for all features |
+| `gemini-embedding-001` | Text embeddings for RAG |
+| LangChain (`langchain-text-splitters`, `langchain-google-genai`, `langchain-community`) | Chunking, embedding wrapper, FAISS integration |
+| FAISS | In-memory vector similarity search |
+| SQLite | Stores analysis results and interview chat history |
+| pypdf | Extracts text from PDF resumes |
 
 ---
 
@@ -116,18 +82,16 @@ AI Career Copilot addresses this problem by providing an integrated AI-powered p
 ```text
 AI-Career-Copilot/
 │
-├── app.py
-├── agent.py
-├── backend.py
-├── config.py
-├── database.py
-├── rag.py
-├── utils.py
+├── app.py          # Streamlit UI and page routing
+├── backend.py      # Resume analysis, ATS match, skill gap, roadmap, mock interview logic
+├── agent.py        # Four-step agent workflow (resume → gap → interview → roadmap)
+├── rag.py          # RAG pipeline: chunking, embeddings, FAISS, answer generation
+├── database.py     # SQLite setup and save/fetch helpers
+├── utils.py        # PDF text extraction
+├── config.py       # Loads the Gemini API key
 │
-├── career.db
-├── uploads/
-│
-├── .env
+├── career.db       # SQLite database (auto-created)
+├── .env            # Your API key (never commit this)
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -138,112 +102,135 @@ AI-Career-Copilot/
 ## ⚙️ Installation and Setup
 
 ### Prerequisites
-
 - Python 3.11 or later
-- Git
-- Visual Studio Code
-- Google Gemini API Key
+- A Google Gemini API key from https://aistudio.google.com/apikey
 
-### 1. Clone the Repository
-
+### 1. Clone the repository
 ```bash
 git clone https://github.com/YOUR_USERNAME/AI-Career-Copilot.git
-```
-
-Navigate to the project directory:
-
-```bash
 cd AI-Career-Copilot
 ```
 
-### 2. Create a Virtual Environment
-
+### 2. Create and activate a virtual environment
 ```bash
 python -m venv venv
 ```
-
-### 3. Activate the Environment
-
-**Windows PowerShell**
-
+**Windows (PowerShell):**
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
-
-**Linux / macOS**
-
+**Linux / macOS:**
 ```bash
 source venv/bin/activate
 ```
 
-### 4. Install Dependencies
-
+### 3. Install dependencies
 ```bash
-python -m pip install -r requirements.txt
+pip install streamlit google-generativeai langchain-text-splitters \
+            langchain-google-genai langchain-community faiss-cpu \
+            pypdf python-dotenv
+```
+Or, once you have a `requirements.txt`:
+```bash
+pip install -r requirements.txt
 ```
 
-### 5. Configure Environment Variables
+### 4. Configure your API key
 
-Create a `.env` file in the root directory.
-
+Create a `.env` file in the project root:
 ```env
 GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Obtain your API key from:
+Update `config.py` so the key is read from the environment instead of being hardcoded:
+```python
+import os
+from dotenv import load_dotenv
 
-https://aistudio.google.com/apikey
+load_dotenv()
+API_KEY = os.getenv("GEMINI_API_KEY")
+```
 
-Do not upload your API key to GitHub.
+Add this to `.gitignore`:
+```text
+.env
+venv/
+career.db
+__pycache__/
+```
 
-### 6. Run the Application
+> ⚠️ **Never commit your API key.** If a key was ever pushed to GitHub, revoke it and create a new one.
 
+### 5. Run the app
 ```bash
 python -m streamlit run app.py
 ```
-
-The application will be available at:
-
-http://localhost:8501
+Open http://localhost:8501 in your browser.
 
 ---
 
-## 🔐 Environment Variables
+## 🔄 How It Works
 
-| Variable | Description |
-|---|---|
-| `GEMINI_API_KEY` | API key for Google Gemini |
+### Resume features
+1. The user uploads a PDF resume.
+2. `pypdf` extracts the text.
+3. The text (plus the job description, when needed) is placed into a role-based prompt and sent to Gemini 2.5 Flash.
+4. The response is displayed in the UI. Resume Analyzer results are also saved to SQLite.
+
+### RAG Career Chatbot
+1. Resume text is split into chunks (1000 characters, 200 overlap) using `RecursiveCharacterTextSplitter`.
+2. Each chunk is embedded with `gemini-embedding-001` and stored in a FAISS index.
+3. For each question, the top 3 most similar chunks are retrieved.
+4. Gemini answers using only that retrieved context.
+
+### Mock Interview
+1. Interview turns are stored in the `chat_history` table.
+2. On each turn, the last 10 turns are loaded and rebuilt into the prompt as conversation history.
+3. Relevant resume and job description snippets are selected with keyword-overlap retrieval (top 2 chunks each).
+4. Gemini plays the interviewer: greets and asks a question at the start, then critiques and asks a follow-up on later turns.
+
+### AI Agent Workflow
+Four specialized prompts run in sequence:
+1. **Resume Agent**: extracts skills, projects, education, experience
+2. **Skill Gap Agent**: finds missing skills, tools, certifications
+3. **Interview Agent**: generates 10 tailored interview questions
+4. **Roadmap Agent**: builds a learning roadmap from the extracted resume information
 
 ---
 
-## 🔄 Application Workflow
+## ⚠️ Known Limitations
 
-1. The user uploads a resume.
-2. The system extracts the resume text.
-3. AI analyzes the candidate's skills and experience.
-4. The user selects a target company and job role.
-5. The system identifies skill gaps.
-6. Personalized preparation recommendations are generated.
-7. The mock interview agent conducts an interview.
-8. Candidate responses are evaluated.
-9. A final performance scorecard is generated.
+- Only text-based PDFs are supported (scanned PDFs need OCR).
+- The ATS score is an LLM estimate, so it can vary between runs.
+- The agents are a prompt-chaining pipeline, not autonomous tool-using agents.
+- Mock interview history is shared globally and has no "new interview" reset.
+- The FAISS index is in-memory and is lost when the app restarts.
+- No user authentication; all data lives in one SQLite file.
+- API calls have no retry or rate-limit handling yet.
 
 ---
 
 ## 🎯 Future Enhancements
 
-- Company Intelligence Agent for company research.
-- Interview Experience Mining Agent.
-- Personalized DSA preparation coach.
-- Automated coding assessments.
-- Real-time voice-based mock interviews.
-- Interview performance analytics dashboard.
-- LangGraph-based multi-agent orchestration.
-- AWS deployment using Docker.
-- GitHub Actions CI/CD integration.
+- Fix mock interview answer handling and add a "New Interview" button with a final performance scorecard
+- Structured (JSON) outputs validated with Pydantic
+- LangGraph-based multi-agent orchestration
+- Persistent vector store (ChromaDB or pgvector)
+- FastAPI backend separated from the Streamlit frontend
+- User accounts and per-user history
+- Company intelligence and interview experience agents
+- Personalized DSA preparation coach
+- Voice-based mock interviews
+- Docker deployment and CI/CD with GitHub Actions
 
 ---
 
-## 🎓 Project Objective
+## 🔐 Privacy Note
 
-The objective of AI Career Copilot is to develop an intelligent, personalized career preparation system that assists students in improving their technical skills, interview performance, and placement readiness through autonomous AI-powered assistance.
+Resume text is sent to the Google Gemini API for processing. Avoid uploading resumes containing sensitive personal information you are not comfortable sharing with a third-party service.
+
+---
+
+## 📄 License
+
+This project is intended for educational and research purposes.
